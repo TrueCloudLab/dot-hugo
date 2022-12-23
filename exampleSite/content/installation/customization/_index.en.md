@@ -51,5 +51,5 @@ If you need to change this default behavior, create a new file in `layouts/parti
 ```toml
 [params]
   # font family
-  font_family = "lato" # Choose font family from : https://fonts.google.com/
+  font_family = "WorkSans" # Choose font family from : https://fonts.google.com/
 ```

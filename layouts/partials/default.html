@@ -2,7 +2,7 @@
 <section class="single section-sm pb-0">
   <div class="container">
     <div class="row">
-      <div class="col-lg-3">
+      <div class="col-lg-4">
         <div class="sidebar">
           <a
             class="back-btn"
@@ -10,25 +10,49 @@
             aria-label="back"
           ></a>
           <ul class="list-styled">
-            {{ $currentNode := . }} {{range .Site.Home.Sections.ByWeight}} {{ if
-            eq .FirstSection $currentNode.FirstSection }} {{ template
-            "section-tree-nav" dict "sect" . "currentnode" $currentNode}} {{ end
-            }} {{ end }} {{ if .Content }} {{ if eq .Params.downloadBtn "true"
-            }}
-            <div>
-              <button class="btn btn-primary btn-block" id="generatePDF">
-                Get Pdf
-              </button>
-            </div>
-            {{ end }} {{ end }}
+            {{ $currentNode := . }}
+            {{range .Site.Home.Sections.ByWeight}}
+              {{ if eq .FirstSection $currentNode.FirstSection }}
+                {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode}}
+              {{ end }}
+            {{ end }}
+            {{ if .Content }}
+              {{ if eq .Params.downloadBtn "true" }}
+              <div>
+                <button class="btn btn-primary btn-block" id="generatePDF">
+                  Get Pdf
+                </button>
+              </div>
+              {{ end }}
+            {{ end }}
           </ul>
         </div>
       </div>
-      <div class="col-lg-9">
+      <div class="col-lg-8">
         <div class="p-lg-5 p-4 bg-white" id="content">
           <h2 class="mb-5" id="title">{{ .Title }}</h2>
           {{ if .Content }}
-          <div class="content">{{.Content}}</div>
+            <div class="content">
+              {{ if isset .Params "status" }}
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Status</th>
+                      <th>Category</th>
+                      <th>Authors</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>{{ .Params.status }}</th>
+                      <th>{{ .Params.category }}</th>
+                      <th>{{ .Params.author }}</th>
+                    </tr>
+                  </tbody>
+                </table>
+              {{ end }}
+              {{.Content}}
+            </div>
           {{ else }}
           <div class="bg-light p-4">
             <ul class="page-list">
@@ -85,28 +109,50 @@
 <!-- /details page -->
 
 <!-- templates -->
-{{ define "section-tree-nav" }} {{ $showvisitedlinks := .showvisitedlinks }} {{
-$currentNode := .currentnode }} {{with .sect}} {{safeHTML .Params.head}} {{
-$fileUniqueID := "" }} {{ with .File }}{{ $fileUniqueID = .UniqueID }}{{ end }}
-{{ $currentNodeFileUniqueID := "" }} {{ with $currentNode.File }}{{
-$currentNodeFileUniqueID = .UniqueID }}{{ end }}
-<li
-  data-nav-id="{{.Permalink}}"
-  title="{{.Title}}"
-  class="sidelist
-  {{if eq $fileUniqueID $currentNodeFileUniqueID}}active{{end}}"
->
-  <a href="{{.Permalink}}">
-    {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML
-    .Params.Post}}
-  </a>
-  {{ $numberOfPages := (add (len .Pages) (len .Sections)) }} {{ if ne
-  $numberOfPages 0 }}
-  <ul>
-    {{ range .Pages.ByWeight }} {{ if and .Params.hidden (not $.showhidden) }}
-    {{else}} {{ template "section-tree-nav" dict "sect" . "currentnode"
-    $currentNode }} {{end}} {{end}}
-  </ul>
+{{ define "section-tree-nav" }}
+  {{ $showvisitedlinks := .showvisitedlinks }}
+  {{ $currentNode := .currentnode }}
+  {{with .sect}}
+    {{safeHTML .Params.head}}
+    {{ $fileUniqueID := "" }}
+    {{ with .File }}
+      {{ $fileUniqueID = .UniqueID }}
+    {{ end }}
+    {{ $currentNodeFileUniqueID := "" }}
+    {{ with $currentNode.File }}
+      {{ $currentNodeFileUniqueID = .UniqueID }}
+    {{ end }}
+    <li
+      data-nav-id="{{.Permalink}}"
+      title="{{.Title}}"
+      class="sidelist
+      {{if eq $fileUniqueID $currentNodeFileUniqueID}}active{{end}}"
+    >
+      <a href="{{.Permalink}}">
+        {{ safeHTML .Params.Pre }}
+          {{ or .Params.menuTitle .LinkTitle .Title }}
+        {{ safeHTML .Params.Post }}
+        <i class="ti-angle-right"></i>
+      </a>
+      {{ $numberOfPages := (add (len .Pages) (len .Sections)) }}
+      {{ if ne $numberOfPages 0 }}
+        <ul>
+          {{ $currentNodePath := split $currentNode.File "/" }}
+          {{ $folderName := (index $currentNodePath 1) }}
+          {{ if gt (len (findRE ".md" $folderName)) 0 }}
+              {{ $folderName = "Others" }}
+          {{ end }}
+
+          {{ range .Pages.ByWeight }}
+            {{ if eq (isset .Page.Params "status") false }}
+              {{ if and .Params.hidden (not $.showhidden) }}
+              {{else}}
+                {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode }}
+              {{end}}
+            {{end}}
+          {{end}}
+        </ul>
+      {{ end }}
+    </li>
   {{ end }}
-</li>
-{{ end }} {{ end }}
+{{ end }}

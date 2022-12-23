@@ -28,12 +28,6 @@
     type="image/x-icon"
   />
 
-  <!-- fonts -->
-  <link
-    href="https://fonts.googleapis.com/css?family={{replace .Site.Params.font_family ' ' '+' | title}}:300,400,700&display=swap"
-    rel="stylesheet"
-  />
-
   <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script>
@@ -42,6 +36,7 @@
     :root{
       --primary-color:{{ .Site.Params.primary_color }};
       --body-color:{{ .Site.Params.body_color }};
+      --bg-color:{{ .Site.Params.bg_color }};
       --text-color:{{ .Site.Params.text_color }};
       --text-color-dark:{{ .Site.Params.text_color_dark }};
       --white-color:{{ .Site.Params.white_color }};
