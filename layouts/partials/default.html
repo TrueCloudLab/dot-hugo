@@ -30,7 +30,7 @@
       </div>
       <div class="col-lg-8">
         <div class="p-lg-5 p-4 bg-white" id="content">
-          <h2 class="mb-5" id="title">{{ .Title }}</h2>
+          <h2 class="mb-5" id="title">{{ partial "title.html" . }}</h2>
           {{ if .Content }}
             <div class="content">
               {{ if isset .Params "status" }}
